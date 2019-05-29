@@ -16,9 +16,13 @@
                     <div class="card-body">
                          <h5 class="card-title"><%= recipe.name %></h5>
                     </div>
+                
+                
+                    <p>
+                        <a href="/recipes/<%= recipe._id %>" class="btn btn-primary">More Info</a>
+                    </p>
+                
                 </div>
-                
-                
                 
             </div>
         <% }); %>
