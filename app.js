@@ -2,41 +2,17 @@ var express = require("express"),
     app = express(),
     bodyParser = require("body-parser"),
     mongoose = require("mongoose"), 
-    PORT = process.env.PORT || 5000,
-    IP = process.env.IP || '127.0.0.1';
+    Recipe = require("./models/recipe"),
+    seedDB = require("./seeds");
+
+var PORT = process.env.PORT || 5000;
+var IP = process.env.IP || '127.0.0.1';
+
 
 mongoose.connect("mongodb://localhost/recipeapp", { useNewUrlParser: true });
 app.use(bodyParser.urlencoded({extended: true}));
 app.set("view engine", "ejs");
-
-//SCHEMA Set-up
-var recipeSchema = new mongoose.Schema({
-    name: String,
-    image: String,
-    description: String,
-    ingredients: String,
-    instructions: String
-});
-
-var Recipe = mongoose.model("Recipe", recipeSchema);
-
-// var recipes = [
-//         {
-//             name: "Over Easy Eggs", 
-//             image: "https://images.unsplash.com/photo-1554781026-44b3a8bf6f11?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=500&q=60",
-//             description: "Runny yolk, cooked whites, Mmmmm..."
-//         },
-//         {
-//             name: "Soft-Boiled Eggs", 
-//             image: "https://images.unsplash.com/photo-1529570634977-ec042420117b?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=500&q=60",
-//             description: "The perfect breakfast meal."
-//         },
-//         {
-//             name: "Sunny-Side Up Eggs", 
-//             image: "https://images.unsplash.com/photo-1521513919009-be90ad555598?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=500&q=60",
-//             description: "Simple. Showcases the beauty of the egg yolk."
-//         }
-//     ];
+seedDB();
 
 app.get("/", function(req, res){
     res.render("landing");
@@ -83,7 +59,7 @@ app.get("/recipes/new", function(req, res) {
    res.render("new") 
 });
 
-// Show info on one recipe
+// Show info of one recipe
 app.get("/recipes/:id", function(req, res){
     // find the recipe with the provided ID
     var id = req.params.id;

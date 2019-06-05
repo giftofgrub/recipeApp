@@ -7,9 +7,19 @@
     
 <p><%= recipe.description %></p>
 
-<p><%= recipe.ingredients %></p>
+<ul>
+    <h3>Ingredients:</h3>
+    <% recipe.ingredients.split("\n").forEach(ingredient => { %>
+        <p><%= ingredient %></p>
+    <% }); %>
+</ul>
 
-<p><%= recipe.instructions %></p>
+<ul>
+    <h3>Instructions:</h3>
+    <% recipe.instructions.split("\n").forEach(paragraph => { %>
+        <p><%= paragraph %></p>
+    <% }); %>
+</ul>
 
 
 
