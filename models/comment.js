@@ -3,7 +3,11 @@ var mongoose = require("mongoose");
 
 var commentSchema = mongoose.Schema({
     text: String,
-    author: String
+    author: String,
+    date: {
+        type: Date,
+        default: Date.now()
+    }
 });
 
 // export model

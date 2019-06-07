@@ -3,6 +3,7 @@ var express = require("express"),
     bodyParser = require("body-parser"),
     mongoose = require("mongoose"), 
     Recipe = require("./models/recipe"),
+    Comment = require("./models/comment"),
     seedDB = require("./seeds");
 
 var PORT = process.env.PORT || 5000;
@@ -12,6 +13,7 @@ var IP = process.env.IP || '127.0.0.1';
 mongoose.connect("mongodb://localhost/recipeapp", { useNewUrlParser: true });
 app.use(bodyParser.urlencoded({extended: true}));
 app.set("view engine", "ejs");
+//seed DB with 3 recipes
 seedDB();
 
 app.get("/", function(req, res){
@@ -24,13 +26,13 @@ app.get("/recipes", function(req, res) {
         if(err) {
             console.log("error")
         } else {
-            res.render("index", {recipes:allRecipes})
+            res.render("recipes/index", {recipes:allRecipes})
         }
     });
 });
 app.post("/recipes", function(req, res) {
-    // get data from form and add to campgrounds array
-    //redirect to campgrounds page
+    // get data from form and add to recipes array
+    //redirect to recipes page
     
     var name = req.body.name;
     var image = req.body.image;
@@ -55,21 +57,62 @@ app.post("/recipes", function(req, res) {
     
 });
 
+//NEW - show form to create new recipe
+
 app.get("/recipes/new", function(req, res) {
-   res.render("new") 
+   res.render("recipes/new") 
 });
 
 // Show info of one recipe
 app.get("/recipes/:id", function(req, res){
     // find the recipe with the provided ID
     var id = req.params.id;
-    Recipe.findById(id, function(err, foundRecipe){
+    // populate Recipe with its comments from another Mongoose Schema
+    Recipe.findById(id).populate("comments").exec(function(err, foundRecipe){
         if(err) {
             console.log(err);
         } else {
-            res.render("show", {recipe: foundRecipe})
+            res.render("recipes/show", {recipe: foundRecipe})
         }
     });
+});
+
+//==========================================
+//    Comments Routes
+//==========================================
+
+app.get("/recipes/:id/comments/new", function(req, res){
+    // find recipe by id
+    Recipe.findById(req.params.id, function(err, recipe){
+        if(err){
+            console.log(err);
+        } else {
+            res.render("comments/new", {recipe: recipe});
+        }
+    });
+});
+
+app.post("/recipes/:id/comments", function(req, res){
+    //lookup recipe using ID
+    Recipe.findById(req.params.id, function(err, recipe){
+        if(err){
+            console.log(err);
+            res.redirect("/recipes");
+        } else {
+            Comment.create(req.body.comment, function(err, comment){
+                if(err){
+                    console.log(err);
+                } else {
+                    recipe.comments.push(comment);
+                    recipe.save();
+                    res.redirect((`/recipes/${recipe._id}`))
+                }
+            })
+        }
+    });
+    //create new comment
+    //connect new comment to recipe
+    //redirect to recipe show page
 });
 
 
