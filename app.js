@@ -4,7 +4,10 @@ var express = require("express"),
     mongoose = require("mongoose"), 
     Recipe = require("./models/recipe"),
     Comment = require("./models/comment"),
-    seedDB = require("./seeds");
+    User = require("./models/user"),
+    seedDB = require("./seeds"),
+    passport = require("passport"),
+    LocalStrategy = require("passport-local")
 
 var PORT = process.env.PORT || 5000;
 var IP = process.env.IP || '127.0.0.1';
@@ -16,9 +19,32 @@ app.set("view engine", "ejs");
 //seed DB with 3 recipes
 seedDB();
 
+//PASSPORT CONFIGURATION
+app.use(require("express-session")({
+    secret: "secret phrase",
+    resave: false,
+    saveUninitialized: false
+}));
+app.use(passport.initialize());
+app.use(passport.session());
+passport.use(new LocalStrategy(User.authenticate()));
+passport.serializeUser(User.serializeUser());
+passport.deserializeUser(User.deserializeUser());
+
+// pass in user to all views 
+app.use(function(req, res, next){
+    res.locals.currentUser = req.user;
+    next();
+});
+
+//landing page
 app.get("/", function(req, res){
     res.render("landing");
 });
+
+//==========================================
+//    Recipes Routes
+//==========================================
 
 app.get("/recipes", function(req, res) {
     // Get all recipes from DB
@@ -81,7 +107,7 @@ app.get("/recipes/:id", function(req, res){
 //    Comments Routes
 //==========================================
 
-app.get("/recipes/:id/comments/new", function(req, res){
+app.get("/recipes/:id/comments/new", isLoggedIn, function(req, res){
     // find recipe by id
     Recipe.findById(req.params.id, function(err, recipe){
         if(err){
@@ -92,7 +118,7 @@ app.get("/recipes/:id/comments/new", function(req, res){
     });
 });
 
-app.post("/recipes/:id/comments", function(req, res){
+app.post("/recipes/:id/comments", isLoggedIn, function(req, res){
     //lookup recipe using ID
     Recipe.findById(req.params.id, function(err, recipe){
         if(err){
@@ -115,6 +141,61 @@ app.post("/recipes/:id/comments", function(req, res){
     //redirect to recipe show page
 });
 
+//============
+// AUTH ROUTES
+//============
+
+// show register form
+app.get("/register", function(req, res){
+    res.render("register");
+});
+// handle sign up logic
+app.post("/register", function(req, res){
+    var newUser = new User({username: req.body.username});
+    User.register(newUser, req.body.password, function(err, user){
+        if(err){
+            console.log(err);
+            res.render("register");
+        }
+        passport.authenticate("local")(req, res, function(){
+            res.redirect("/recipes");
+        });
+    });
+});
+
+
+// show login form
+app.get("/login", function(req, res){
+    res.render("login");
+});
+
+// handling login logic
+app.post("/login", passport.authenticate("local", 
+    {
+        successRedirect: "/recipes",
+        failureRedirect: "/login"
+    }), function(req, res){
+  
+});
+
+// logout route
+app.get("/logout", function(req, res){
+    req.logout();
+    res.redirect("/recipes");
+});
+
+// middleware
+function isLoggedIn(req, res, next) {
+    if(req.isAuthenticated()){
+        return next();
+    }
+    res.redirect("/login")
+}
+
+
+
+
+// Server Configuration
 
 app.listen(PORT, IP, function() {
     console.log("recipeApp server has started");
