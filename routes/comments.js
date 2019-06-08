@@ -28,6 +28,12 @@ router.post("/", isLoggedIn, function(req, res){
                 if(err){
                     console.log(err);
                 } else {
+                    //add username and Obj id to comment
+                    comment.author.id = req.user_id;
+                    comment.author.username = req.user.username;
+                    //save comment
+                    comment.save();
+                    //add comment to recipe
                     recipe.comments.push(comment);
                     recipe.save();
                     res.redirect((`/recipes/${recipe._id}`))

@@ -8,12 +8,23 @@ var recipeSchema = new mongoose.Schema({
     description: String,
     ingredients: String,
     instructions: String,
+    author: {
+        id:{
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "User"
+        },
+        username: String
+    },
     comments: [
         {
             type: mongoose.Schema.Types.ObjectId,
             ref: "Comment"
         }
-    ]
+    ],
+    created : {
+        type: Date,
+        default: Date.now()
+    }
 });
 
 // export model

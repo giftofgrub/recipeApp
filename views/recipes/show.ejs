@@ -1,42 +1,59 @@
 <% include ../partials/header %>
+<div class="container">
+    <div class="row">
+        <div class="col-md-9">
+            <div class="card">
+                <img class="card-img-top" src="<%= recipe.image %>">
+                <div class="card-body">
+                    
+                    <h3 class="card-title d-inline"><a href="#"><%= recipe.name %></a></h3>
+                    <p><h6><%= recipe.description %></h6></p>
 
+                    <div class="d-flex justify-content-between">
+                        <small class="card-title d-inline">Created by: <%= recipe.author.username %></small>
+                        <small class="card-title d-inline"><%= recipe.created%></small>
+                    </div>
+                    
 
-<h1><p><%= recipe.name %></p></h1>
+                    <h3>Ingredients:</h3>
+                    <% recipe.ingredients.split("\n").forEach(ingredient => { %>
+                        <p><%= ingredient %></p>
+                    <% }); %>
 
-<img src="<%= recipe.image %>">
+                    <h3>Instructions:</h3>
+                    <ol>
+                        <% recipe.instructions.split("\n").forEach(paragraph => { %>
+                            <li><%= paragraph %></li>
+                        <% }); %>
+                    </ol>
+                </div>
+                <div class="card-body bg-light">
+                    <div class="text-right">
+                        <p><a class="btn btn-success" href="/recipes/<%= recipe._id %>/comments/new">Add New Comment</a></p>
+                    </div>
+                    <hr>
+                    <% recipe.comments.forEach(function(comment){ %>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="d-flex justify-content-between">
+                                    <strong><%= comment.author.username %></strong>
+                                    <span><%= comment.date %></span>
+                                </div>
+                                <p>
+                                    <%= comment.text %>
+                                </p>
+                            </div>
+                        </div>
+                    <% }); %>
+                </div>
+            </div>
+            
+            
+        </div>
+        
+    </div>
     
-<p><%= recipe.description %></p>
-
-<p>
-    <a class="btn btn-success" href="/recipes/<%= recipe._id %>/comments/new">Add New Comment</a>
-</p>
-
-<ul>
-    <h3>Ingredients:</h3>
-    <% recipe.ingredients.split("\n").forEach(ingredient => { %>
-        <p><%= ingredient %></p>
-    <% }); %>
-</ul>
-
-<ul>
-    <h3>Instructions:</h3>
-    <% recipe.instructions.split("\n").forEach(paragraph => { %>
-        <p><%= paragraph %></p>
-    <% }); %>
-</ul>
-
-<div class="comment-area">
-    <h3>Comments: </h3>
-    <% recipe.comments.forEach(function(comment){ %>
-        <p>
-            <strong><%= comment.author %></strong> - <%= comment.text %>
-        </p>
-        <p>
-            <small><small><%= comment.date %></small></small>
-        </p>
-    <% }); %>
 </div>
-
 
 
 <% include ../partials/footer %>

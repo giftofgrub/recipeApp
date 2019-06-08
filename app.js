@@ -21,8 +21,9 @@ var commentRoutes = require("./routes/comments"),
 mongoose.connect("mongodb://localhost/recipeapp", { useNewUrlParser: true });
 app.use(bodyParser.urlencoded({extended: true}));
 app.set("view engine", "ejs");
+
 //seed DB with 3 recipes
-seedDB();
+//seedDB();
 
 //PASSPORT CONFIGURATION
 app.use(require("express-session")({

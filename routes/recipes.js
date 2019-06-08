@@ -8,6 +8,7 @@ var Recipe = require("../models/recipe");
 //    Recipes Routes
 //==========================================
 
+//Index Route
 router.get("", function(req, res) {
     // Get all recipes from DB
     Recipe.find({}, function(err, allRecipes){
@@ -18,7 +19,8 @@ router.get("", function(req, res) {
         }
     });
 });
-router.post("", function(req, res) {
+//NEW - show form to create new recipe
+router.post("/", isLoggedIn, function(req, res) {
     // get data from form and add to recipes array
     //redirect to recipes page
     
@@ -27,12 +29,17 @@ router.post("", function(req, res) {
     var description = req.body.description;
     var ingredients = req.body.ingredients;
     var instructions = req.body.instructions;
+    var author = {
+        id: req.user._id,
+        username: req.user.username
+    };
     var newRecipe = {
         name: name,
         image: image,
         description: description,
         ingredients: ingredients,
-        instructions: instructions
+        instructions: instructions,
+        author: author
     };
     
     Recipe.create(newRecipe, function(err, newlyCreated){

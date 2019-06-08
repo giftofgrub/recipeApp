@@ -36,7 +36,7 @@ router.get("/login", function(req, res){
     res.render("login");
 });
 
-// handling login logic
+// handling login logic, passes in User object
 router.post("/login", passport.authenticate("local", 
     {
         successRedirect: "/recipes",
