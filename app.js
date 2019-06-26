@@ -6,7 +6,6 @@ var express = require("express"),
     Recipe = require("./models/recipe"),
     Comment = require("./models/comment"),
     User = require("./models/user"),
-    seedDB = require("./seeds"),
     passport = require("passport"),
     LocalStrategy = require("passport-local"),
     methodOverride = require("method-override")
@@ -20,15 +19,15 @@ var commentRoutes = require("./routes/comments"),
     recipeRoutes = require("./routes/recipes"),
     indexRoutes = require("./routes/index");
 
-mongoose.connect("mongodb://localhost/recipeapp", { useNewUrlParser: true });
+// database info
+var DATABASEURL = process.env.DATABASEURL || "mongodb://localhost/recipeapp"
+
+mongoose.connect(DATABASEURL, { useNewUrlParser: true });
 app.use(bodyParser.urlencoded({extended: true}));
 app.set("view engine", "ejs");
 app.use(express.static(__dirname + "/public"));
 app.use(methodOverride("_method"));
 app.use(flash());
-
-//seed DB with 3 recipes
-//seedDB();
 
 //PASSPORT CONFIGURATION
 app.use(require("express-session")({
