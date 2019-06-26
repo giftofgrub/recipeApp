@@ -1,6 +1,7 @@
 var express = require("express");
 var router = express.Router();
 var Recipe = require("../models/recipe");
+var { isLoggedIn, checkRecipeOwnership } = require("../middleware")
 
 
 
@@ -8,8 +9,8 @@ var Recipe = require("../models/recipe");
 //    Recipes Routes
 //==========================================
 
-//Index Route
-router.get("", function(req, res) {
+// Index Route
+router.get("/", function(req, res) {
     // Get all recipes from DB
     Recipe.find({}, function(err, allRecipes){
         if(err) {
@@ -19,7 +20,13 @@ router.get("", function(req, res) {
         }
     });
 });
-//NEW - show form to create new recipe
+
+// NEW - show form to create new recipe
+router.get("/new", isLoggedIn, function(req, res) {
+    res.render("recipes/new") 
+ });
+
+ // CREATE Route
 router.post("/", isLoggedIn, function(req, res) {
     // get data from form and add to recipes array
     //redirect to recipes page
@@ -52,11 +59,7 @@ router.post("/", isLoggedIn, function(req, res) {
     
 });
 
-//NEW - show form to create new recipe
 
-router.get("/new", function(req, res) {
-   res.render("recipes/new") 
-});
 
 // Show info of one recipe
 router.get("/:id", function(req, res){
@@ -64,20 +67,51 @@ router.get("/:id", function(req, res){
     var id = req.params.id;
     // populate Recipe with its comments from another Mongoose Schema
     Recipe.findById(id).populate("comments").exec(function(err, foundRecipe){
-        if(err) {
-            console.log(err);
+        if(err || !foundRecipe) {
+            req.flash("error", "Recipe not found");
+            res.redirect("/recipes")
         } else {
             res.render("recipes/show", {recipe: foundRecipe})
         }
     });
 });
 
-// middleware
-function isLoggedIn(req, res, next) {
-    if(req.isAuthenticated()){
-        return next();
-    }
-    res.redirect("/login")
-}
 
+// EDIT Recipe route
+router.get("/:id/edit", checkRecipeOwnership, function(req, res){
+    Recipe.findById(req.params.id, function(err, foundRecipe){
+        if(err || !foundRecipe) {
+            req.flash("error", "Recipe not found");
+            res.redirect("/recipes");
+        } else {
+            res.render("recipes/edit", {recipe: foundRecipe});
+        }
+        
+    });
+});
+
+// UPDATE Recipe route
+router.put("/:id", checkRecipeOwnership, function(req, res){
+    //find and update correct recipe
+    Recipe.findOneAndUpdate({_id: req.params.id}, req.body.recipe, function(err, updatedRecipe){
+        if(err || !updatedRecipe){
+            res.redirect("/recipes");
+        } else {
+            req.flash("success", "Successfully updated recipe");
+            res.redirect(`/recipes/${updatedRecipe._id}`);
+        }
+    });
+});
+
+// DESTROY Recipe route
+router.delete("/:id", checkRecipeOwnership, function(req, res) {
+    Recipe.findOneAndDelete({_id: req.params.id}, function(err){
+        if(err){
+            res.redirect("/recipes");
+        } else {
+            req.flash("success", "Successfully deleted recipe");
+            res.redirect("/recipes");
+        }
+    });
+});
 module.exports = router;

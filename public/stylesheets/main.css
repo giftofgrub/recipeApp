@@ -1,0 +1,11 @@
+textarea {
+    border: 0 none white;
+    overflow: hidden;
+    padding: 0;
+    outline: none;
+    background-color: #D0D0D0;
+    resize: none;
+    width: 100%;
+    white-space: pre;
+    overflow: auto;
+}

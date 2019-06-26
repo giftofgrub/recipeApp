@@ -2,12 +2,14 @@ var express = require("express"),
     app = express(),
     bodyParser = require("body-parser"),
     mongoose = require("mongoose"), 
+    flash = require('connect-flash'),
     Recipe = require("./models/recipe"),
     Comment = require("./models/comment"),
     User = require("./models/user"),
     seedDB = require("./seeds"),
     passport = require("passport"),
-    LocalStrategy = require("passport-local")
+    LocalStrategy = require("passport-local"),
+    methodOverride = require("method-override")
 
 //require server info
 var PORT = process.env.PORT || 5000;
@@ -21,6 +23,9 @@ var commentRoutes = require("./routes/comments"),
 mongoose.connect("mongodb://localhost/recipeapp", { useNewUrlParser: true });
 app.use(bodyParser.urlencoded({extended: true}));
 app.set("view engine", "ejs");
+app.use(express.static(__dirname + "/public"));
+app.use(methodOverride("_method"));
+app.use(flash());
 
 //seed DB with 3 recipes
 //seedDB();
@@ -40,6 +45,8 @@ passport.deserializeUser(User.deserializeUser());
 // pass in user to all views 
 app.use(function(req, res, next){
     res.locals.currentUser = req.user;
+    res.locals.error = req.flash("error");
+    res.locals.success = req.flash("success");
     next();
 });
 

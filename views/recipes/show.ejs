@@ -11,7 +11,7 @@
 
                     <div class="d-flex justify-content-between">
                         <small class="card-title d-inline">Created by: <%= recipe.author.username %></small>
-                        <small class="card-title d-inline"><%= recipe.created%></small>
+                        <small class="card-title d-inline"><%= recipe.created.getMonth() %>/<%= recipe.created.getDate() %>/<%= recipe.created.getFullYear() %></small>
                     </div>
                     
 
@@ -26,6 +26,12 @@
                             <li><%= paragraph %></li>
                         <% }); %>
                     </ol>
+                    <% if(currentUser && recipe.author.id.equals(currentUser._id)) { %>
+                        <a href="/recipes/<%= recipe._id %>/edit" class="btn btn-warning btn-sm">Edit</a>
+                        <form class="d-inline" action="/recipes/<%= recipe._id %>?_method=DELETE" method="POST">
+                            <input class="btn btn-danger btn-sm" type="submit" value="Delete">
+                        </form>
+                    <% } %>
                 </div>
                 <div class="card-body bg-light">
                     <div class="text-right">
@@ -37,11 +43,20 @@
                             <div class="col-md-12">
                                 <div class="d-flex justify-content-between">
                                     <strong><%= comment.author.username %></strong>
-                                    <span><%= comment.date %></span>
+                                    <span><%= comment.date.getMonth() %>/<%= comment.date.getDate() %>/<%= comment.date.getFullYear() %></span>
                                 </div>
                                 <p>
                                     <%= comment.text %>
                                 </p>
+                                <% if(currentUser && comment.author.id.equals(currentUser._id)) { %>
+                                    <a class="badge badge-warning" 
+                                        href="/recipes/<%= recipe._id %>/comments/<%= comment._id %>/edit">
+                                        Edit
+                                    </a>
+                                    <form class="d-inline" action="/recipes/<%= recipe._id %>/comments/<%= comment._id %>?_method=DELETE" method="POST">
+                                        <button class="btn badge badge-danger">Delete</button>
+                                    </form>
+                                <% } %>
                             </div>
                         </div>
                     <% }); %>

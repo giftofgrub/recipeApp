@@ -1,13 +1,15 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>RecipeApp</title>
+        <title>ReciPeep</title>
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
         <link rel="stylesheet" href="/stylesheets/main.css">
+        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
+
     </head>
     <body>
     <nav class="navbar navbar-expand-md navbar-light bg-light mb-2">
-        <a class="navbar-brand" href="/">RecipeApp</a>
+        <a class="navbar-brand" href="/">ReciPeep</a>
         <div class="collapse navbar-collapse justify-content-end">
             <ul class="navbar-nav">
                 <% if(!currentUser) {%>
@@ -20,5 +22,18 @@
             </ul>
         </div>
     </nav>
+    <div class="container">
+        <% if(error && error.length > 0) { %>
+            <div class="alert alert-danger">
+                <h3><%= error %></h3>
+            </div>
+        <% } %>
+        
+        <% if(success && success.length > 0) { %>
+            <div class="alert alert-success">
+                <h3><%= success %></h3>
+            </div>
+        <% } %>
+    </div>
         
    
