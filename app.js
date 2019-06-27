@@ -11,6 +11,9 @@ var express = require("express"),
     methodOverride = require("method-override")
 
 //require server info
+// var PORT = process.env.PORT;
+// var IP = process.env.IP;
+
 var PORT = process.env.PORT || 5000;
 var IP = process.env.IP || '127.0.0.1';
 
